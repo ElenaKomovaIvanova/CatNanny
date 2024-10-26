@@ -4,28 +4,25 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
 
-
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'password', 'email', 'first_name', 'last_name']
 
     def validate_username(self, value):
-        # Проверка, существует ли пользователь с таким же именем
+        # Check if a user with the same username exists
         if User.objects.filter(username=value).exists():
-
             raise serializers.ValidationError("A user with the same name already exists.")
         return value
 
     def validate_email(self, value):
-        # Проверка уникальности email
+        # Check for unique email
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError("A user with this email is already registered.")
         return value
 
     def create(self, validated_data):
-        print(validated_data)
-        # Создание пользователя с валидацией
+        # Create user with validation
         user = User.objects.create_user(
             username=validated_data['username'],
             password=validated_data['password'],
@@ -39,10 +36,5 @@ class RegisterSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = '__all__'
-
-    # def create(self, validated_data):
-    #     print(2)
-    #     user = self.context['user']
-    #     profile = Profile.objects.create(user=user, **validated_data)
-    #     return profile
+        fields = ['phone_number', 'bio', 'city', 'address', 'has_pets', 'has_children_under_10',
+                  'work_at_my_house', 'works_at_client_site', 'photo']

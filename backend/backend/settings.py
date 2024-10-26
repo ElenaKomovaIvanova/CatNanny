@@ -1,5 +1,4 @@
 import environ
-from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -12,6 +11,25 @@ NAME = env('NAME')
 USER = env('USER')
 PASSWORD = env('PASSWORD')
 HOST = env('HOST')
+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        "OPTIONS": {
+            "access_key": env('AWS_ACCESS_KEY_ID'),
+            "secret_key": env('AWS_SECRET_ACCESS_KEY'),
+            "bucket_name": env('AWS_STORAGE_BUCKET_NAME'),
+            "region_name": env('AWS_S3_REGION_NAME'),
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
+# AWS_LOCATION = 'public'
+# The URL where the downloaded files will be available
+MEDIA_URL = f'https://{env("AWS_STORAGE_BUCKET_NAME")}.s3.amazonaws.com/'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
