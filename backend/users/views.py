@@ -1,14 +1,17 @@
-from rest_framework import generics
+from math import trunc
+from operator import truediv
+
+from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework import status
 from django.db import IntegrityError
 from .models import Profile
 from .serializers import RegisterSerializer, ProfileSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from .utils import error_response
 
 
 class RegisterView(generics.CreateAPIView):
@@ -33,29 +36,37 @@ class RegisterView(generics.CreateAPIView):
             }, status=status.HTTP_201_CREATED)
 
         except IntegrityError as e:
-            return Response({
-                "error": "Database error",
-                "details": str(e),
-                "error_code": "DATABASE_ERROR",
-                "suggestion": "Perhaps a user with the same name or email already exists.",
-                "status_code": status.HTTP_400_BAD_REQUEST
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return error_response(
+                error="Database error",
+                details=str(e),
+                error_code="DATABASE_ERROR",
+                status_code=status.HTTP_400_BAD_REQUEST,
+                suggestion="Perhaps a user with the same name or email already exists."
+            )
 
         except ValidationError as e:
-            return Response({
-                "error": "Validation error",
-                "details": e.detail,
-                "error_code": "VALIDATION_ERROR",
-                "status_code": status.HTTP_400_BAD_REQUEST
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return error_response(
+                error="Validation error",
+                details=e.detail,
+                error_code="VALIDATION_ERROR",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
 
 
-# View for login
 class LoginView(TokenObtainPairView):
-    pass
+    def post(self, request, *args, **kwargs):
+        try:
+            response = super().post(request, *args, **kwargs)
+            return response
+        except Exception as e:
+            return error_response(
+                error="Login error",
+                details=str(e),
+                error_code="LOGIN_ERROR",
+                status_code=status.HTTP_401_UNAUTHORIZED
+            )
 
 
-# View for logout
 class LogoutView(APIView):
     def post(self, request):
         try:
@@ -64,8 +75,13 @@ class LogoutView(APIView):
             token.blacklist()  # Blacklist the token
 
             return Response(status=status.HTTP_205_RESET_CONTENT)
-        except Exception:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return error_response(
+                error="Logout error",
+                details=str(e),
+                error_code="LOGOUT_ERROR",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class ProfileCreateView(APIView):
@@ -86,12 +102,13 @@ class ProfileCreateView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
 
-        # Return validation errors in JSON format
-        return Response({
-            "status": "error",
-            "message": "Validation failed",
-            "errors": serializer.errors
-        }, status=status.HTTP_400_BAD_REQUEST)
+        # Use error_response for validation errors
+        return error_response(
+            error="Validation failed",
+            details=serializer.errors,
+            error_code="VALIDATION_ERROR",
+            status_code=status.HTTP_400_BAD_REQUEST
+        )
 
 
 class ProfileView(APIView):
@@ -102,3 +119,11 @@ class ProfileView(APIView):
         profile = Profile.objects.get(user=request.user)
         serializer = ProfileSerializer(profile)
         return Response(serializer.data)
+
+
+class NanniesListAPI(generics.ListAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return Profile.objects.filter(is_catnanny=True)
