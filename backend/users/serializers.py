@@ -36,5 +36,5 @@ class RegisterSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ['phone_number', 'bio', 'city', 'address', 'has_pets', 'has_children_under_10',
-                  'work_at_my_house', 'works_at_client_site', 'photo']
+        fields = ['id','phone_number', 'bio', 'city', 'address', 'has_pets', 'has_children_under_10',
+                  'pickup', 'visit', 'photo', 'is_catnanny', 'is_pet_owner']
