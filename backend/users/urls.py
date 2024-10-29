@@ -7,5 +7,7 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('profile/update/', ProfileCreateView.as_view(), name='profile-update'),
     path('profile/', ProfileView.as_view(), name='profile'),
+    path('profile/<int:id>/', ProfileView.as_view(), name='user-profile-by-id'),
     path('nannies/', NanniesListAPI.as_view(), name='nannies'),
+
 ]

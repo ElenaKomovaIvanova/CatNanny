@@ -1,6 +1,6 @@
-from math import trunc
-from operator import truediv
+from datetime import date, datetime
 
+from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -12,6 +12,7 @@ from .models import Profile
 from .serializers import RegisterSerializer, ProfileSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .utils import error_response
+from schedule.views import get_available_user_ids
 
 
 class RegisterView(generics.CreateAPIView):
@@ -114,9 +115,14 @@ class ProfileCreateView(APIView):
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        # Get the current user's profile
-        profile = Profile.objects.get(user=request.user)
+    def get(self, request, id=None):
+        if id:
+            # Получение профиля по указанному id
+            profile = get_object_or_404(Profile, id=id)
+        else:
+            # Получение профиля текущего пользователя
+            profile = Profile.objects.get(user=request.user)
+
         serializer = ProfileSerializer(profile)
         return Response(serializer.data)
 
@@ -126,4 +132,25 @@ class NanniesListAPI(generics.ListAPIView):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-        return Profile.objects.filter(is_catnanny=True)
+        start_date = self.request.query_params.get('start_date')
+        end_date = self.request.query_params.get('end_date')
+
+        # Базовый запрос для профилей котонянь
+        queryset = Profile.objects.filter(is_catnanny=True)
+
+        # Проверка, заданы ли даты
+        if start_date and end_date:
+            try:
+                start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+                end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+            except ValueError:
+                return Profile.objects.none()  # Вернуть пустой набор, если даты некорректны
+
+
+            # Получаем список занятых пользователей
+            unavailable_user_ids = get_available_user_ids(start_date, end_date)
+
+            # Исключаем занятых пользователей из запроса
+            queryset = queryset.exclude(user_id__in=unavailable_user_ids)
+
+        return queryset
