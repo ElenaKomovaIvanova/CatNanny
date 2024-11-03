@@ -1,4 +1,3 @@
-// src/components/OrdersList.tsx
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchOrders } from "../redux/ordersSlice";
@@ -22,11 +21,10 @@ const OrdersList: React.FC = () => {
     const navigate = useNavigate();
     const { orders, status, error } = useSelector((state: RootState) => state.orders);
 
+    // Запрос при каждом монтировании компонента для получения актуального списка заказов
     useEffect(() => {
-        if (status === 'idle') {
-            dispatch(fetchOrders());
-        }
-    }, [status, dispatch]);
+        dispatch(fetchOrders());
+    }, [dispatch]);
 
     if (status === 'loading') return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 5 }}><CircularProgress /></Box>;
     if (status === 'failed') return <p>Error: {error}</p>;
@@ -53,10 +51,11 @@ const OrdersList: React.FC = () => {
                             key={order.id}
                             hover
                             onClick={() => handleRowClick(order.id)}
-                            sx={{ cursor: 'pointer' }} // Указатель при наведении на строку
+                            sx={{ cursor: 'pointer' }}
                         >
                             <TableCell align="center">{order.id}</TableCell>
                             <TableCell align="center">{order.start_date} - {order.end_date}</TableCell>
+                            <TableCell align="center">{order.current_status || ''}</TableCell> {/* Пустое значение, если статус отсутствует */}
                         </TableRow>
                     ))}
                 </TableBody>

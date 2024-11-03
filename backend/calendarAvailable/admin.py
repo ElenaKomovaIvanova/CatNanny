@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from schedule.models import UnavailablePeriod
+from calendarAvailable.models import UnavailablePeriod
 
 
 # Register the Orders model
@@ -8,3 +8,4 @@ from schedule.models import UnavailablePeriod
 class OrdersAdmin(admin.ModelAdmin):
     list_display = [field.name for field in UnavailablePeriod._meta.fields]  # Отображает все поля модели
     search_fields = ['user', 'start_date', 'end_date']  # Поля для поиска
+

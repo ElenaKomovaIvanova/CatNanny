@@ -21,17 +21,8 @@ class Profile(models.Model):
         return f"Profile of {self.user.username}"
 
 
-# class UnavailableDate(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='unavailable_dates')
-#     date = models.DateField()  # Specific date when the catnanny is unavailable
-#     created_at = models.DateTimeField(auto_now_add=True)
-#
-#     def __str__(self):
-#         return f"{self.user.username} unavailable on {self.date}"
-#
-#     class Meta:
-#         unique_together = ('user', 'date')  # Ensures each date is unique for a specific user
-#
+
+
 # class Review(models.Model):
 #     request = models.ForeignKey(Request, on_delete=models.CASCADE, related_name='reviews')
 #     reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='written_reviews')

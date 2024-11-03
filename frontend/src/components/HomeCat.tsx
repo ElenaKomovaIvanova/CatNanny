@@ -10,6 +10,9 @@ import LoginPage from "./LoginPage";
 import OrdersList from "./OrdersList";
 import OrderForm from "./OrderForm";
 import NanniesList from "./NanniesList";
+import UnavailableDates from "./UnavailablePeriodForm";
+import ReviewForm from "./ReviewForm";
+import ReviewsList from "./ReviewsList";
 
 // Create custom theme
 export const theme = createTheme({
@@ -75,6 +78,12 @@ const HomeCat: React.FC = () => {
                         <Button color="secondary" component={Link} to="/nannies">
                             Nannies
                         </Button>
+                        <Button color="secondary" component={Link} to="/calendar">
+                            Calendar
+                        </Button>
+                        <Button color="secondary" component={Link} to="/review/list">
+                            Reviews
+                        </Button>
                     </Toolbar>
                 </AppBar>
 
@@ -103,6 +112,12 @@ const HomeCat: React.FC = () => {
                     <MenuItem onClick={handleMenuClose} component={Link} to="/nannies">
                         Nannies
                     </MenuItem>
+                    <MenuItem onClick={handleMenuClose} component={Link} to="/calendar">
+                        Calendar
+                    </MenuItem>
+                    <MenuItem onClick={handleMenuClose} component={Link} to="/reviews">
+                        Reviews
+                    </MenuItem>
                 </Menu>
 
                 {/* Routes for pages */}
@@ -115,6 +130,11 @@ const HomeCat: React.FC = () => {
                     <Route path="/orders/:orderId" element={<OrderForm />} />
                     <Route path="/nannies" element={<NanniesList />} />
                     <Route path="nannies/profile/:id" element={<Profile />} />
+                    <Route path="/orders/new" element={<OrderForm />} />
+                    <Route path="/calendar" element={<UnavailableDates />} />
+                    <Route path="/review/new" element={<ReviewForm />} />
+                    <Route path="/review/list" element={<ReviewsList />} />
+                    <Route path="/review/:id" element={<ReviewForm />} /> {/* Передача ID */}
                 </Routes>
             </div>
         </ThemeProvider>

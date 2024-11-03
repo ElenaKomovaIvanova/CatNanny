@@ -11,3 +11,9 @@ class UnavailablePeriodSerializer(serializers.ModelSerializer):
         if data['end_date'] < data['start_date']:
             raise serializers.ValidationError("End date cannot be before start date.")
         return data
+
+
+class UnavailablePeriodSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UnavailablePeriod
+        fields = ['start_date', 'end_date']

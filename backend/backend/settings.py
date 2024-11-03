@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'users',
     'orders',
     'reviews',
-    'schedule',
+    'calendarAvailable',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',

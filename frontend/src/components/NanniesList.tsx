@@ -43,8 +43,9 @@ const NanniesList: React.FC = () => {
     };
 
     const handleCardClick = (nannyId: number) => {
-        dispatch(fetchProfile({ id: nannyId.toString() }));
-        navigate(`profile/${nannyId}`);
+        navigate(`profile/${nannyId}`, {
+            state: { startDate, endDate },
+        });
     };
 
     if (status === 'loading') return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 5 }}><CircularProgress /></Box>;

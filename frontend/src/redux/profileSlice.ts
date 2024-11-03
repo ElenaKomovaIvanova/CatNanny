@@ -15,6 +15,9 @@ interface ProfileData {
     photo: File;
     is_catnanny: boolean;
     is_pet_owner: boolean;
+    user_id:string;
+    first_name: string; // добавляем имя
+    last_name: string;
 }
 
 // Profile state interface
@@ -72,16 +75,17 @@ export const updateProfile = createAsyncThunk(
 // Async thunk for fetching profile
 export const fetchProfile = createAsyncThunk(
     'profile/fetchProfile',
-    async ({ id }: { id?: string }, { rejectWithValue }) => { // Передаем id внутри объекта
+    async ({ id }: { id?: string }, { rejectWithValue }) => {
+        const token = localStorage.getItem('access_token');
+        const url = id ? `/api/profile/${id}/` : '/api/profile/';
+
         try {
-            const token = localStorage.getItem('access_token');
-            const url = id ? `/api/profile/${id}/` : '/api/profile/'; // Используем id, если он есть
-            console.log(url);
-            const response = await axios.get(url, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            const headers: any = {};
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            const response = await axios.get(url, { headers });
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response ? error.response.data : { error: 'Unexpected error occurred.' });

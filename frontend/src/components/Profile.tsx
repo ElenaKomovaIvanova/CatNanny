@@ -8,7 +8,7 @@ import {getCroppedImg} from "../redux/cropImage";
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {theme} from "./HomeCat";
-import {useParams} from "react-router-dom";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 
 // Interface for profile data
 interface ProfileFormData {
@@ -20,13 +20,23 @@ interface ProfileFormData {
     has_children_under_10: boolean;
     pickup: boolean;
     visit: boolean;
-    photo: string | File;  // Changed to string | File
+    photo: string | File;
     is_catnanny: boolean;
     is_pet_owner: boolean;
+    user_id: string;
+    first_name: string; // добавляем имя
+    last_name: string;  // добавляем фамилию
+}
+
+interface LocationState {
+    startDate?: string;
+    endDate?: string;
+    first_name: string;
+    last_name:string;
 }
 
 const ProfileForm: React.FC = () => {
-    const { id } = useParams<{ id: string }>(); // Получаем id из URL, если он есть
+    const { id } = useParams<{ id: string }>(); // Get the id from the URL, if it exists
     const dispatch = useDispatch<AppDispatch>();
     const {profile, status, error} = useSelector((state: RootState) => state.profile);
 
@@ -41,22 +51,24 @@ const ProfileForm: React.FC = () => {
         visit: profile?.visit || false,
         photo: profile?.photo || '',
         is_catnanny: profile?.is_catnanny || false,
-        is_pet_owner: profile?.is_pet_owner || false
+        is_pet_owner: profile?.is_pet_owner || false,
+        user_id: profile?.user_id || '',
+        first_name: profile?.first_name || '', // добавляем имя
+        last_name: profile?.last_name || ''
     });
 
     useEffect(() => {
         const fetchData = async () => {
             if (id) {
-                await dispatch(fetchProfile({ id })); // Если есть id, загружаем профиль няни
+                await dispatch(fetchProfile({ id })); // If there is an id, load the nanny's profile
             } else {
-                await dispatch(fetchProfile({})); // Если id нет, загружаем профиль текущего пользователя
+                await dispatch(fetchProfile({})); // If there is no id, load the current user's profile
             }
         };
         fetchData();
     }, [dispatch, id]);
 
-
-// Update formData when profile data is successfully fetched
+    // Update formData when profile data is successfully fetched
     useEffect(() => {
         if (profile) {
             setFormData({
@@ -69,11 +81,15 @@ const ProfileForm: React.FC = () => {
                 pickup: profile.pickup || false,
                 visit: profile.visit || false,
                 photo: profile.photo || '',
-                is_catnanny: profile?.is_catnanny || false,
-                is_pet_owner: profile?.is_pet_owner || false
+                is_catnanny: profile.is_catnanny || false,
+                is_pet_owner: profile.is_pet_owner || false,
+                user_id: profile.user_id || '',
+                first_name: profile.first_name || '', // добавляем имя
+                last_name: profile.last_name || '',   // добавляем фамилию
             });
         }
     }, [profile]);
+
     const [image, setImage] = useState<string | ArrayBuffer | null>(null);
     const [crop, setCrop] = useState({x: 0, y: 0});
     const [zoom, setZoom] = useState(1);
@@ -104,6 +120,23 @@ const ProfileForm: React.FC = () => {
                 [name]: value,
             });
         }
+    };
+
+    const location = useLocation() as unknown as Location & { state?: LocationState };
+    const navigate = useNavigate();
+
+    // Извлекаем startDate и endDate из location.state, если они переданы
+    const { startDate = '', endDate = '', first_name, last_name } = location.state || {};
+    const handleCreateOrder = () => {
+        navigate(`/orders/new`, {
+            state: {
+                startDate,
+                endDate,
+                first_name: formData.first_name,
+                last_name: formData.last_name,
+                catnanny: location.pathname.split('/').pop(), // ID профиля
+            },
+        });
     };
 
     const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
@@ -154,6 +187,26 @@ const ProfileForm: React.FC = () => {
                         style={{width: '150px', height: '150px', borderRadius: '50%', marginBottom: '16px'}}
                     />
                 )}
+
+                <TextField
+                    fullWidth
+                    label="First Name"
+                    name="first_name"
+                    value={formData.first_name}
+                    onChange={handleChange}
+                    margin="normal"
+                    variant="outlined"
+                />
+
+                <TextField
+                    fullWidth
+                    label="Last Name"
+                    name="last_name"
+                    value={formData.last_name}
+                    onChange={handleChange}
+                    margin="normal"
+                    variant="outlined"
+                />
 
                 <TextField
                     fullWidth
@@ -262,7 +315,7 @@ const ProfileForm: React.FC = () => {
                         <Checkbox
                             checked={formData.visit}
                             onChange={handleChange}
-                            name="pickup"
+                            name="visit"
                         />
                     }
                     label="Works at Client Site"
@@ -313,6 +366,18 @@ const ProfileForm: React.FC = () => {
                 >
                     Update Profile
                 </Button>
+
+                {id && (
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleCreateOrder}
+                        fullWidth
+                        sx={{ marginTop: 2 }}
+                    >
+                        Create order
+                    </Button>
+                )}
 
                 {status === 'succeeded' && <Typography color="success.main">Profile updated successfully.</Typography>}
                 {status === 'loading' && <Typography color="primary.main">Updating profile...</Typography>}

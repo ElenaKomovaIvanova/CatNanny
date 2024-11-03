@@ -15,6 +15,8 @@ export interface OrderData {
     end_date: string;
     stay_type: 'pickup' | 'visit';
     message?: string;
+    current_status: string | null;
+    allowed_statuses?: string[]; // new field for allowed statuses
 }
 
 // Define the interface for the form state
@@ -25,12 +27,12 @@ export interface OrderFormState {
 }
 
 // Async thunk for creating a request
-export const createRequest = createAsyncThunk(
-    'request/createRequest',
+export const createOrder = createAsyncThunk(
+    'request/createOrder',
     async (requestData: OrderData, {rejectWithValue}) => {
         try {
             const token = localStorage.getItem('access_token');
-            const response = await axios.post('/api/requests/', requestData, {
+            const response = await axios.post('/api/orders/new/', requestData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -42,7 +44,7 @@ export const createRequest = createAsyncThunk(
     }
 );
 
-export const fetchRequest = createAsyncThunk(
+export const fetchOrder = createAsyncThunk(
     'request/fetchRequest',
     async (orderId: string, {rejectWithValue}) => {
         try {
@@ -52,7 +54,9 @@ export const fetchRequest = createAsyncThunk(
                     Authorization: `Bearer ${token}`
                 }
             });
-            return response.data as OrderData;
+            const data = response.data;
+            console.log(data)
+            return data as OrderData;
         } catch (error: any) {
             return rejectWithValue(error.response ? error.response.data : {error: 'Failed to fetch request data.'});
         }
@@ -88,7 +92,9 @@ const initialState: OrderFormState = {
         start_date: '',
         end_date: '',
         stay_type: 'pickup',
-        message: ''
+        message: '',
+        current_status: '',
+        allowed_statuses: [] // initializing empty
     },
     status: 'idle',
     error: null,
@@ -100,27 +106,39 @@ const orderSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(createRequest.pending, (state) => {
+            .addCase(createOrder.pending, (state) => {
                 state.status = 'loading';
                 state.error = null;
             })
-            .addCase(createRequest.fulfilled, (state, action: PayloadAction<OrderData>) => {
+            .addCase(createOrder.fulfilled, (state, action: PayloadAction<OrderData>) => {
                 state.status = 'succeeded';
                 state.request = action.payload;
             })
-            .addCase(createRequest.rejected, (state, action: PayloadAction<any>) => {
+            .addCase(createOrder.rejected, (state, action: PayloadAction<any>) => {
                 state.status = 'failed';
-                state.error = action.payload?.error || 'Failed to create request';
+                const payload = action.payload;
+                if (payload && typeof payload === 'object') {
+                    // Объединяем ошибки в читаемую строку
+                    state.error = Object.entries(payload)
+                        .map(([field, errors]) => `${field}: ${(errors as string[]).join(', ')}`)
+                        .join('\n');
+                } else {
+                    state.error = 'Failed to create request';
+                }
+
+                console.log(action.payload); // Для отладки
             })
-            .addCase(fetchRequest.pending, (state) => {
+            .addCase(fetchOrder.pending, (state) => {
                 state.status = 'loading';
                 state.error = null;
             })
-            .addCase(fetchRequest.fulfilled, (state, action: PayloadAction<OrderData>) => {
+            .addCase(fetchOrder.fulfilled, (state, action: PayloadAction<OrderData>) => {
                 state.status = 'succeeded';
                 state.request = action.payload;
+                console.log(action.payload.allowed_statuses);
+                state.request.allowed_statuses = action.payload.allowed_statuses || [];
             })
-            .addCase(fetchRequest.rejected, (state, action: PayloadAction<any>) => {
+            .addCase(fetchOrder.rejected, (state, action: PayloadAction<any>) => {
                 state.status = 'failed';
                 state.error = action.payload?.error || 'Failed to fetch request data';
             })

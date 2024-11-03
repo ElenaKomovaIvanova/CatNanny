@@ -7,6 +7,7 @@ interface Order {
     id: number;
     start_date: string;
     end_date: string;
+    current_status: string | null;
 }
 
 interface OrdersState {
