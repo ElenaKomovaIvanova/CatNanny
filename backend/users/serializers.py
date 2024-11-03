@@ -33,8 +33,22 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+
+
 class ProfileSerializer(serializers.ModelSerializer):
+    first_name = serializers.SerializerMethodField()
+    last_name = serializers.SerializerMethodField()
+
     class Meta:
         model = Profile
-        fields = ['id','phone_number', 'bio', 'city', 'address', 'has_pets', 'has_children_under_10',
-                  'pickup', 'visit', 'photo', 'is_catnanny', 'is_pet_owner']
+        fields = [
+            'id', 'phone_number', 'bio', 'city', 'address', 'has_pets', 'has_children_under_10',
+            'pickup', 'visit', 'photo', 'is_catnanny', 'is_pet_owner', 'user_id',
+            'first_name', 'last_name'
+        ]
+
+    def get_first_name(self, obj):
+        return obj.user.first_name if obj.user else None
+
+    def get_last_name(self, obj):
+        return obj.user.last_name if obj.user else None

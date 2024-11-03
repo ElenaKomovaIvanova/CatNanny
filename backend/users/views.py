@@ -9,10 +9,11 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.db import IntegrityError
 from .models import Profile
+from .permissions import IsAuthenticatedOrReadOnlyForSpecificProfile
 from .serializers import RegisterSerializer, ProfileSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .utils import error_response
-from schedule.views import get_available_user_ids
+from calendarAvailable.views import AvailabilityManager
 
 
 class RegisterView(generics.CreateAPIView):
@@ -113,14 +114,19 @@ class ProfileCreateView(APIView):
 
 
 class ProfileView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnlyForSpecificProfile]
 
     def get(self, request, id=None):
         if id:
-            # Получение профиля по указанному id
+            # Разрешаем доступ к профилю по id для всех пользователей
             profile = get_object_or_404(Profile, id=id)
         else:
-            # Получение профиля текущего пользователя
+            # Требуем авторизацию для доступа к собственному профилю, если id не указан
+            if not request.user.is_authenticated:
+                return Response(
+                    {"error": "Authentication required to access your own profile."},
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
             profile = Profile.objects.get(user=request.user)
 
         serializer = ProfileSerializer(profile)
@@ -146,9 +152,8 @@ class NanniesListAPI(generics.ListAPIView):
             except ValueError:
                 return Profile.objects.none()  # Вернуть пустой набор, если даты некорректны
 
-
             # Получаем список занятых пользователей
-            unavailable_user_ids = get_available_user_ids(start_date, end_date)
+            unavailable_user_ids = AvailabilityManager.get_available_user_ids(start_date, end_date)
 
             # Исключаем занятых пользователей из запроса
             queryset = queryset.exclude(user_id__in=unavailable_user_ids)

@@ -5,6 +5,11 @@ import logger from 'redux-logger'; // Logger middleware
 import requestReducer from './orderSlice'
 import ordersReducer from './ordersSlice'
 import nanniesReducer from './nannySlice'
+import calendarReducer from './calendarSlice'
+import reviewsReducer from './reviewsSlice'
+import reviewReducer from './reviewSlice'
+
+
 // Create Redux store
 const store = configureStore({
     reducer: {
@@ -13,6 +18,9 @@ const store = configureStore({
         request: requestReducer,
         orders: ordersReducer,
         nannies: nanniesReducer,
+        calendar:calendarReducer,
+        review:reviewReducer,
+        reviews:reviewsReducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(logger),
