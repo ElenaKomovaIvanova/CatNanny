@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Avg
 
 
 class Profile(models.Model):
@@ -20,6 +21,10 @@ class Profile(models.Model):
     def __str__(self):
         return f"Profile of {self.user.username}"
 
+    def get_average_rating(self):
+        # Вычисляем средний рейтинг на основе отзывов
+        average_rating = self.reviews_received.aggregate(Avg('rating'))['rating__avg'] or 0
+        return round(average_rating, 1)
 
 
 

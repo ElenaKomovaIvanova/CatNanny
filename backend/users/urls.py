@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterView, LoginView, LogoutView, ProfileCreateView, ProfileView, NanniesListAPI
+from .views import RegisterView, LoginView, LogoutView, ProfileCreateView, ProfileView, NanniesListAPI, upload_image
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
@@ -9,5 +9,6 @@ urlpatterns = [
     path('profile/', ProfileView.as_view(), name='profile'),
     path('profile/<int:id>/', ProfileView.as_view(), name='user-profile-by-id'),
     path('nannies/', NanniesListAPI.as_view(), name='nannies'),
+    path('upload-image/', upload_image, name='upload_image'),
 
 ]

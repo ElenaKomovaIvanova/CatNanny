@@ -56,9 +56,9 @@ const calendarSlice = createSlice({
             .addCase(fetchUnavailablePeriods.pending, (state) => {
                 state.status = 'loading';
             })
-            .addCase(fetchUnavailablePeriods.fulfilled, (state, action: PayloadAction<UnavailablePeriodData[]>) => {
+            .addCase(fetchUnavailablePeriods.fulfilled, (state, action: any) => {
                 state.status = 'succeeded';
-                state.unavailablePeriods = action.payload;  // Сохраняем занятые даты в состояние
+                state.unavailablePeriods = action.payload.results;  // Сохраняем занятые даты в состояние
             })
             .addCase(fetchUnavailablePeriods.rejected, (state, action: PayloadAction<any>) => {
                 state.status = 'failed';

@@ -55,7 +55,6 @@ export const fetchOrder = createAsyncThunk(
                 }
             });
             const data = response.data;
-            console.log(data)
             return data as OrderData;
         } catch (error: any) {
             return rejectWithValue(error.response ? error.response.data : {error: 'Failed to fetch request data.'});
@@ -68,7 +67,7 @@ export const updateRequest = createAsyncThunk(
     async ({id, ...requestData}: OrderData & { id: string }, {rejectWithValue}) => {
         try {
             const token = localStorage.getItem('access_token');
-            const response = await axios.put(`/api/requests/${id}/`, requestData, {
+            const response = await axios.put(`/api/orders/${id}/`, requestData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -135,7 +134,6 @@ const orderSlice = createSlice({
             .addCase(fetchOrder.fulfilled, (state, action: PayloadAction<OrderData>) => {
                 state.status = 'succeeded';
                 state.request = action.payload;
-                console.log(action.payload.allowed_statuses);
                 state.request.allowed_statuses = action.payload.allowed_statuses || [];
             })
             .addCase(fetchOrder.rejected, (state, action: PayloadAction<any>) => {

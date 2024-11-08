@@ -29,7 +29,7 @@ export const fetchOrders = createAsyncThunk('orders/fetchOrders', async () => {
             Authorization: `Bearer ${token}`, // Добавляем токен в заголовок
         },
     });
-    return response.data as Order[];
+    return response.data.results as Order[];
 });
 
 const ordersSlice = createSlice({

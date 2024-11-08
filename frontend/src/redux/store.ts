@@ -8,6 +8,8 @@ import nanniesReducer from './nannySlice'
 import calendarReducer from './calendarSlice'
 import reviewsReducer from './reviewsSlice'
 import reviewReducer from './reviewSlice'
+import visitsReducer from './visitsSlice'
+import chatReducer from './chatSlice';
 
 
 // Create Redux store
@@ -20,7 +22,9 @@ const store = configureStore({
         nannies: nanniesReducer,
         calendar:calendarReducer,
         review:reviewReducer,
-        reviews:reviewsReducer
+        reviews:reviewsReducer,
+        visits: visitsReducer,
+        chat: chatReducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(logger),

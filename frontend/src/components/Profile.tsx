@@ -2,7 +2,7 @@ import React, {useEffect, useState, useCallback} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../redux/store';
 import {fetchProfile, updateProfile} from '../redux/profileSlice';
-import {Box, TextField, Button, Checkbox, FormControlLabel, Typography} from '@mui/material';
+import {Box, TextField, Button, Checkbox, FormControlLabel, Typography, CircularProgress} from '@mui/material';
 import Cropper from 'react-easy-crop';
 import {getCroppedImg} from "../redux/cropImage";
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
@@ -147,30 +147,23 @@ const ProfileForm: React.FC = () => {
         e.preventDefault();
         const data = new FormData();
 
-        // If there is a new image and cropped area, add cropped image to FormData
         if (image && croppedAreaPixels) {
-            const croppedImg = await getCroppedImg(image as string, croppedAreaPixels);
+            const { base64Image, uniqueFilename } = await getCroppedImg(image as string, croppedAreaPixels);
 
-            const blob = await fetch(croppedImg)
-                .then(res => {
-                    if (!res.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return res.blob();
-                });
+            // Создаем blob и файл
+            const blob = await fetch(base64Image).then((res) => res.blob());
+            const file = new File([blob], uniqueFilename, { type: 'image/jpeg' });
 
-            const file = new File([blob], 'croppedImage.jpg', {type: 'image/jpeg'});
-            data.append('photo', file);
+            data.append('photo', file); // Добавляем уникальный файл
         }
 
-        // Add other profile data, excluding the photo field if it hasn’t changed
         Object.entries(formData).forEach(([key, value]) => {
-            if (key !== 'photo' || (value && typeof value !== 'string')) {  // Check that photo is not an empty string
+            if (key !== 'photo' || (value && typeof value !== 'string')) {
                 data.append(key, value instanceof File ? value : String(value));
             }
         });
 
-        dispatch(updateProfile(data));
+        dispatch(updateProfile(data)); // отправка данных профиля и файла
     };
 
     return (
@@ -380,7 +373,7 @@ const ProfileForm: React.FC = () => {
                 )}
 
                 {status === 'succeeded' && <Typography color="success.main">Profile updated successfully.</Typography>}
-                {status === 'loading' && <Typography color="primary.main">Updating profile...</Typography>}
+                {status === 'loading' && <Box sx={{ display: 'flex', justifyContent: 'center', mt: 5 }}><CircularProgress /></Box>}
                 {status === 'failed' && <Typography
                     color="error.main"> {typeof error === 'string' ? error : JSON.stringify(error)}</Typography>}
             </Box>

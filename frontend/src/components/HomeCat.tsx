@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, Route, Routes } from 'react-router-dom';
+import {Link, Route, Routes, useNavigate} from 'react-router-dom';
 import RegisterForm from './RegisterForm';
 import Profile from './Profile';
 import { AppBar, Toolbar, Typography, Button, Menu, MenuItem, IconButton } from '@mui/material';
@@ -13,6 +13,9 @@ import NanniesList from "./NanniesList";
 import UnavailableDates from "./UnavailablePeriodForm";
 import ReviewForm from "./ReviewForm";
 import ReviewsList from "./ReviewsList";
+import {useDispatch, useSelector} from "react-redux";
+import {AppDispatch, RootState} from "../redux/store";
+import {logoutUser} from "../redux/userSlice";
 
 // Create custom theme
 export const theme = createTheme({
@@ -35,8 +38,17 @@ export const theme = createTheme({
     },
 });
 
+
 const HomeCat: React.FC = () => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const dispatch = useDispatch<AppDispatch>();
+    const navigate = useNavigate();
+    const token = useSelector((state: RootState) => state.user.token);
+
+    const handleLogout = () => {
+        dispatch(logoutUser());  // Вызываем действие logout
+        navigate('/login');  // Перенаправляем на страницу входа после выхода
+    };
 
     const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget); // Open menu
@@ -63,27 +75,37 @@ const HomeCat: React.FC = () => {
                         <Button color="secondary" component={Link} to="/">
                             Home
                         </Button>
-                        <Button color="secondary" component={Link} to="/register">
-                            Register
-                        </Button>
-                        <Button color="secondary" component={Link} to="/profile">
-                            Profile
-                        </Button>
-                        <Button color="secondary" component={Link} to="/login">
-                            Login
-                        </Button>
-                        <Button color="secondary" component={Link} to="/orders">
-                            Orders
-                        </Button>
                         <Button color="secondary" component={Link} to="/nannies">
                             Nannies
                         </Button>
-                        <Button color="secondary" component={Link} to="/calendar">
-                            Calendar
-                        </Button>
-                        <Button color="secondary" component={Link} to="/review/list">
-                            Reviews
-                        </Button>
+                        {token ? (
+                            <>
+                                <Button color="secondary" component={Link} to="/orders">
+                                    Orders
+                                </Button>
+                                <Button color="secondary" component={Link} to="/calendar">
+                                    Calendar
+                                </Button>
+                                <Button color="secondary" component={Link} to="/review/list">
+                                    My reviews
+                                </Button>
+                                <Button color="secondary" component={Link} to="/profile">
+                                    Profile
+                                </Button>
+                                <Button color="secondary" onClick={handleLogout}>
+                                    Logout
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                <Button color="secondary" component={Link} to="/register">
+                                    Register
+                                </Button>
+                                <Button color="secondary" component={Link} to="/login">
+                                    Login
+                                </Button>
+                            </>
+                        )}
                     </Toolbar>
                 </AppBar>
 
