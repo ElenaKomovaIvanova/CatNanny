@@ -125,7 +125,6 @@ const orderSlice = createSlice({
                 } else {
                     state.error = 'Failed to create request';
                 }
-
                 console.log(action.payload); // Для отладки
             })
             .addCase(fetchOrder.pending, (state) => {
