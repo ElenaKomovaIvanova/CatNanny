@@ -16,7 +16,7 @@ class AvailabilityManager:
             Q(start_date__gte=start_date) & Q(end_date__lte=end_date)    # Полностью внутри диапазона
         ).values_list('user', flat=True)
 
-        # Возвращаем список доступных пользователей, исключая недоступных
+              # Возвращаем список доступных пользователей, исключая недоступных
         return unavailable_user_ids
 
 

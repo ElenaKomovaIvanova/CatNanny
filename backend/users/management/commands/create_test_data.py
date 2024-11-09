@@ -9,7 +9,7 @@ from django.db.models.signals import post_save
 fake = Faker()
 
 
-def create_test_users_and_profiles(num_users=10):
+def create_test_users_and_profiles(num_users=30):
     half = num_users // 2  # Половина для котонянь, половина для владельцев питомцев
 
     for i in range(num_users):

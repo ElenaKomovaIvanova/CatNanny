@@ -1,5 +1,3 @@
-# orders/views.py
-# orders/views.py
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
@@ -14,19 +12,18 @@ class OrdersListAPI(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        # Используем Q-объекты для фильтрации по владельцу или котоняне
-        return Orders.objects.filter(Q(owner=user) | Q(catnanny__user=user))
+        # Используем `catnanny__user` для связи `Profile` с `User`
+        queryset = Orders.objects.filter(Q(owner=user) | Q(catnanny__user=user))
+        return queryset
 
 
-class OrderDetailAPI(generics.RetrieveAPIView):
+class OrderDetailAPI(generics.RetrieveUpdateAPIView):
     queryset = Orders.objects.all()
     serializer_class = OrdersSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # Ограничиваем доступ только для заявок текущего пользователя
         user = self.request.user
-        # Ограничиваем доступ для заказов, где текущий пользователь — либо владелец, либо котоняня
         return Orders.objects.filter(Q(owner=user) | Q(catnanny__user=user))
 
 

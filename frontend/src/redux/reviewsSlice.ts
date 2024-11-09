@@ -53,9 +53,9 @@ const reviewsSlice = createSlice({
             .addCase(fetchUserReviews.pending, (state) => {
                 state.status = 'loading';
             })
-            .addCase(fetchUserReviews.fulfilled, (state, action: PayloadAction<ReviewData[]>) => {
+            .addCase(fetchUserReviews.fulfilled, (state, action: any) => {
                 state.status = 'succeeded';
-                state.reviews = action.payload; // Сохраняем отзывы в состояние
+                state.reviews = action.payload.results; // Сохраняем отзывы в состояние
             })
             .addCase(fetchUserReviews.rejected, (state, action: PayloadAction<any>) => {
                 state.status = 'failed';

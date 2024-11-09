@@ -1,32 +1,18 @@
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
 import {Box, Grid, Typography, Card, CardContent, CardMedia, ThemeProvider, createTheme} from '@mui/material';
 
 const theme = createTheme({
-    spacing: 8, // Custom spacing value
+    spacing: 8,
     components: {
         MuiCard: {
             styleOverrides: {
                 root: {
                     display: 'flex',
-                    marginBottom: '20px',
                     maxWidth: '100%',
                     margin: '0 auto',
-                },
-            },
-        },
-        MuiCardMedia: {
-            styleOverrides: {
-                img: {
-                    width: '80%',
-                    maxHeight: '40%',
-                    objectFit: 'contain',
-                },
-            },
-        },
-        MuiTypography: {
-            styleOverrides: {
-                h4: {
-                    marginBottom: '20px',
+                    position: 'sticky', // Карточка остаётся в верхней части экрана
+                    top: 0,
+                    transition: 'transform 0.8s ease, z-index 0.05s ease',
                 },
             },
         },
@@ -34,73 +20,120 @@ const theme = createTheme({
 });
 
 const HomePage: React.FC = () => {
+    const cardRefs = useRef<HTMLDivElement[]>([]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry, index) => {
+                    const target = entry.target as HTMLElement;
+                    if (entry.isIntersecting) {
+                        // Когда карточка входит в видимую область, увеличиваем её zIndex и возвращаем в исходное положение
+                        target.style.zIndex = `${100 - index}`;
+                        target.style.transform = 'translateY(0)';
+                    } else {
+                        // Когда карточка выходит из видимой области, уменьшите её zIndex и сдвиг
+                        target.style.zIndex = `${index}`;
+                        target.style.transform = 'translateY(40px)';
+                    }
+                });
+            },
+            {threshold: 0.1} // Карточка активируется при пересечении 50% видимой области
+        );
+
+        cardRefs.current.forEach((card) => card && observer.observe(card));
+
+        return () => observer.disconnect();
+    }, []);
+
     return (
         <ThemeProvider theme={theme}>
-            <Box sx={{padding: theme.spacing(2.5)}}>
-                <Typography variant="h4" gutterBottom>
-                    When you need help caring for your pet, our experienced pet sitters are always here to help.
-                </Typography>
+            <Box sx={{padding: theme.spacing(2.5), overflowY: 'auto', height: '90vh'}}>
+                {/*<Typography variant="h4" gutterBottom>*/}
+                {/*    When you need help caring for your pet,*/}
+                {/*</Typography>*/}
+                {/*<Typography variant="h4" gutterBottom>*/}
+                {/*    our experienced pet sitters are always here to help.*/}
+                {/*</Typography>*/}
 
-                {/* Card with image on the left and text on the right */}
-                <Card>
+                <Card ref={(el) => el && (cardRefs.current[0] = el)} sx={{transform: 'translateY(40px)', zIndex: 3}}>
                     <Grid container spacing={4} alignItems="center">
                         <Grid item xs={12} md={6}>
                             <CardContent>
+                                <Typography variant="h5" gutterBottom>
+                                    When you need help caring for your pet,
+                                </Typography>
+                                <Typography variant="h5" gutterBottom>
+                                    our experienced pet sitters are always here to help.
+                                </Typography>
                                 <Typography>
-                                    Pet hotels and foster care facilities are only convenient for us humans. Dogs and
-                                    cats are always more comfortable at home.
-                                    The pet remains at home, does not experience the stress of moving to a pet hotel
-                                    and, on the contrary, is not in contact with other animals.
+                                    Pet hotels and foster care facilities are only convenient for us humans. While they
+                                    may provide basic necessities, these environments are often stressful for pets,
+                                    especially those used to the comforts of their own home. Dogs and cats feel most at
+                                    ease in familiar surroundings, where their favorite toys, smells, and routines
+                                    remain unchanged.
                                 </Typography>
                             </CardContent>
                         </Grid>
-                        <Grid item xs={12} md={6}>
+                        <Grid item xs={12} md={6} sx={{display: 'flex'}}>
                             <CardMedia
                                 component="img"
                                 image="/1.png"
                                 alt="Cat Image 1"
+                                sx={{width: '100%', height: '100%', objectFit: 'cover'}}
                             />
                         </Grid>
                     </Grid>
                 </Card>
 
-                {/* Card with image on the right and text on the left */}
-                <Card>
+                <Card ref={(el) => el && (cardRefs.current[1] = el)}
+                      sx={{transform: 'translateY(40px)', zIndex: 2, marginTop: '-50px'}}>
                     <Grid container spacing={4} alignItems="center">
-                        <Grid item xs={12} md={6}>
+                        <Grid item xs={12} md={6} sx={{display: 'flex'}}>
                             <CardMedia
                                 component="img"
                                 image="/2.png"
                                 alt="Cat Image 2"
+                                sx={{width: '100%', height: '100%', objectFit: 'cover'}}
                             />
                         </Grid>
                         <Grid item xs={12} md={6}>
                             <CardContent>
                                 <Typography>
                                     The nanny will feed the cat, change the tray and water, send a photo and video
-                                    report, and play with the cat if desired.
+                                    report, and play with the cat if desired. This personalized care allows the pet to
+                                    feel comfortable and safe, maintaining a routine even in your absence. The nanny's
+                                    updates provide peace of mind, showing that your pet is not just cared for but given
+                                    the attention and affection it deserves. Whether it's an extra treat, a bit of
+                                    playtime, or simply companionship, the nanny ensures that your pet stays happy and
+                                    relaxed.
                                 </Typography>
                             </CardContent>
                         </Grid>
                     </Grid>
                 </Card>
 
-                {/* Card with image on the left and text on the right */}
-                <Card>
-                    <Grid container spacing={2} alignItems="center">
+                <Card ref={(el) => el && (cardRefs.current[2] = el)}
+                      sx={{transform: 'translateY(40px)', zIndex: 1, marginTop: '-50px'}}>
+                    <Grid container spacing={4} alignItems="center">
                         <Grid item xs={12} md={6}>
                             <CardContent>
                                 <Typography>
-                                    This is another example of alternating content with an image. Use this structure to
-                                    highlight key points about your service or product.
+                                    Beyond basic care, the nanny is trained to observe and respond to any signs of
+                                    discomfort or illness, offering an extra layer of security. If your pet needs
+                                    medication or has special dietary requirements, you can trust that these needs will
+                                    be met precisely. Our goal is not only to take care of your pet’s physical needs but
+                                    also to provide emotional support, so your pet feels loved and attended to even when
+                                    you're not around.
                                 </Typography>
                             </CardContent>
                         </Grid>
-                        <Grid item xs={12} md={6}>
+                        <Grid item xs={12} md={6} sx={{display: 'flex'}}>
                             <CardMedia
                                 component="img"
                                 image="/3.png"
                                 alt="Cat Image 3"
+                                sx={{width: '100%', height: '100%', objectFit: 'cover'}}
                             />
                         </Grid>
                     </Grid>
