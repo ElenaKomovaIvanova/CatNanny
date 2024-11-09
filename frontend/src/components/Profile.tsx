@@ -32,11 +32,13 @@ interface LocationState {
     startDate?: string;
     endDate?: string;
     first_name: string;
-    last_name:string;
+    last_name: string;
 }
 
 const ProfileForm: React.FC = () => {
-    const { id } = useParams<{ id: string }>(); // Get the id from the URL, if it exists
+    const {id} = useParams<{ id: string }>(); // Get the id from the URL, if it exists
+    const userId = localStorage.getItem('profile_id');
+    const isOwner = !id || id === userId;
     const dispatch = useDispatch<AppDispatch>();
     const {profile, status, error} = useSelector((state: RootState) => state.profile);
 
@@ -60,7 +62,7 @@ const ProfileForm: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             if (id) {
-                await dispatch(fetchProfile({ id })); // If there is an id, load the nanny's profile
+                await dispatch(fetchProfile({id})); // If there is an id, load the nanny's profile
             } else {
                 await dispatch(fetchProfile({})); // If there is no id, load the current user's profile
             }
@@ -126,7 +128,7 @@ const ProfileForm: React.FC = () => {
     const navigate = useNavigate();
 
     // Извлекаем startDate и endDate из location.state, если они переданы
-    const { startDate = '', endDate = '', first_name, last_name } = location.state || {};
+    const {startDate = '', endDate = '', first_name, last_name} = location.state || {};
     const handleCreateOrder = () => {
         navigate(`/orders/new`, {
             state: {
@@ -148,11 +150,11 @@ const ProfileForm: React.FC = () => {
         const data = new FormData();
 
         if (image && croppedAreaPixels) {
-            const { base64Image, uniqueFilename } = await getCroppedImg(image as string, croppedAreaPixels);
+            const {base64Image, uniqueFilename} = await getCroppedImg(image as string, croppedAreaPixels);
 
             // Создаем blob и файл
             const blob = await fetch(base64Image).then((res) => res.blob());
-            const file = new File([blob], uniqueFilename, { type: 'image/jpeg' });
+            const file = new File([blob], uniqueFilename, {type: 'image/jpeg'});
 
             data.append('photo', file); // Добавляем уникальный файл
         }
@@ -189,6 +191,7 @@ const ProfileForm: React.FC = () => {
                     onChange={handleChange}
                     margin="normal"
                     variant="outlined"
+                    disabled={!isOwner}
                 />
 
                 <TextField
@@ -199,6 +202,7 @@ const ProfileForm: React.FC = () => {
                     onChange={handleChange}
                     margin="normal"
                     variant="outlined"
+                    disabled={!isOwner}
                 />
 
                 <TextField
@@ -209,6 +213,7 @@ const ProfileForm: React.FC = () => {
                     onChange={handleChange}
                     margin="normal"
                     variant="outlined"
+                    disabled={!isOwner}
                 />
 
                 <TextField
@@ -221,6 +226,7 @@ const ProfileForm: React.FC = () => {
                     multiline
                     rows={4}
                     variant="outlined"
+                    disabled={!isOwner}
                 />
 
                 <TextField
@@ -231,6 +237,7 @@ const ProfileForm: React.FC = () => {
                     onChange={handleChange}
                     margin="normal"
                     variant="outlined"
+                    disabled={!isOwner}
                 />
 
                 <TextField
@@ -241,6 +248,7 @@ const ProfileForm: React.FC = () => {
                     onChange={handleChange}
                     margin="normal"
                     variant="outlined"
+                    disabled={!isOwner}
                 /><br/>
 
                 <FormControlLabel
@@ -253,6 +261,7 @@ const ProfileForm: React.FC = () => {
                     }
                     label="Cat Nanny"
                     sx={{marginBottom: 1}}
+                    disabled={!isOwner}
                 /><br/>
 
                 <FormControlLabel
@@ -265,6 +274,7 @@ const ProfileForm: React.FC = () => {
                     }
                     label="Pet Owner"
                     sx={{marginBottom: 1}}
+                    disabled={!isOwner}
                 /><br/>
 
                 <FormControlLabel
@@ -277,6 +287,7 @@ const ProfileForm: React.FC = () => {
                     }
                     label="Has Pets"
                     sx={{marginBottom: 1}}
+                    disabled={!isOwner}
                 /><br/>
 
                 <FormControlLabel
@@ -289,6 +300,7 @@ const ProfileForm: React.FC = () => {
                     }
                     label="Has Children Under 10"
                     sx={{marginBottom: 1}}
+                    disabled={!isOwner}
                 /><br/>
 
                 <FormControlLabel
@@ -301,6 +313,7 @@ const ProfileForm: React.FC = () => {
                     }
                     label="Takes home"
                     sx={{marginBottom: 1}}
+                    disabled={!isOwner}
                 /><br/>
 
                 <FormControlLabel
@@ -313,30 +326,31 @@ const ProfileForm: React.FC = () => {
                     }
                     label="Works at Client Site"
                     sx={{marginBottom: 1}}
+                    disabled={!isOwner}
                 />
-
-                <label htmlFor="photo-upload">
-                    <input
-                        accept="image/*"
-                        id="photo-upload"
-                        type="file"
-                        name="photo"
-                        onChange={handleChange}
-                        style={{display: 'none'}} // Hide standard input
-                    />
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        component="span"
-                        startIcon={<PhotoCamera/>} // Add icon
-                        fullWidth
-                        sx={{margin: '1rem 0'}}
-                    >
-                        Upload Photo
-                    </Button>
-                </label>
-
-                {image && (
+                {isOwner && (
+                    <label htmlFor="photo-upload">
+                        <input
+                            accept="image/*"
+                            id="photo-upload"
+                            type="file"
+                            name="photo"
+                            onChange={handleChange}
+                            style={{display: 'none'}} // Hide standard input
+                        />
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            component="span"
+                            startIcon={<PhotoCamera/>} // Add icon
+                            fullWidth
+                            sx={{margin: '1rem 0'}}
+                        >
+                            Upload Photo
+                        </Button>
+                    </label>
+                )}
+                {(image && isOwner) && (
                     <div style={{position: 'relative', height: '400px', width: '400px'}}>
                         <Cropper
                             image={image as string}
@@ -350,30 +364,32 @@ const ProfileForm: React.FC = () => {
                     </div>
                 )}
 
-                <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    sx={{marginTop: 2}}
-                >
-                    Update Profile
-                </Button>
-
+                {isOwner && (
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        sx={{marginTop: 2}}
+                    >
+                        Update Profile
+                    </Button>
+                )}
                 {id && (
                     <Button
                         variant="contained"
                         color="primary"
                         onClick={handleCreateOrder}
                         fullWidth
-                        sx={{ marginTop: 2 }}
+                        sx={{marginTop: 2}}
                     >
                         Create order
                     </Button>
                 )}
 
                 {status === 'succeeded' && <Typography color="success.main">Profile updated successfully.</Typography>}
-                {status === 'loading' && <Box sx={{ display: 'flex', justifyContent: 'center', mt: 5 }}><CircularProgress /></Box>}
+                {status === 'loading' &&
+                    <Box sx={{display: 'flex', justifyContent: 'center', mt: 5}}><CircularProgress/></Box>}
                 {status === 'failed' && <Typography
                     color="error.main"> {typeof error === 'string' ? error : JSON.stringify(error)}</Typography>}
             </Box>

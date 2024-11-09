@@ -113,6 +113,25 @@ export const logoutUser = createAsyncThunk<void, void, { rejectValue: ErrorPaylo
     }
 );
 
+export const refreshToken = createAsyncThunk<string, void, { rejectValue: ErrorPayload }>(
+    "user/refreshToken",
+    async (_, { rejectWithValue }) => {
+        try {
+            const refresh = localStorage.getItem("refresh_token");
+            if (!refresh) throw new Error("Refresh token not found");
+
+            const response = await axios.post(`/token/refresh/`, { refresh });
+            const { access } = response.data;
+
+            // Сохраняем новый access token
+            localStorage.setItem("access_token", access);
+            return access;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || { error: "Failed to refresh token" });
+        }
+    }
+);
+
 const cleanErrorString = (errorString: string): string => {
     return errorString
         .replace(/^Validation error:\s*\{|\}\s*$/g, '') // Убираем префикс и крайние фигурные скобки
@@ -126,7 +145,13 @@ const cleanErrorString = (errorString: string): string => {
 const userSlice = createSlice({
     name: 'user',
     initialState,
-    reducers: {},
+    reducers: {
+        updateAccessToken: (state, action: PayloadAction<string>) => {
+            if (state.token) {
+                state.token.access = action.payload;
+            }
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(registerUser.pending, (state) => {
@@ -173,8 +198,19 @@ const userSlice = createSlice({
                 state.error = payload
                     ? `${payload.error}${payload.details ? `: ${payload.details}` : ''}`
                     : 'Logout failed';
+            })
+             .addCase(refreshToken.fulfilled, (state, action: PayloadAction<string>) => {
+                if (state.token) {
+                state.token.access = action.payload;
+                }
+            })
+            .addCase(refreshToken.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = "Failed to refresh token";
             });
     },
 });
 
+
+export const { updateAccessToken } = userSlice.actions;
 export default userSlice.reducer;

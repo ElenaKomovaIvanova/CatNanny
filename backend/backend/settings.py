@@ -159,6 +159,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -176,8 +177,8 @@ REST_FRAMEWORK = {
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=300),  # Время жизни access-токена
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # Время жизни refresh-токена
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),  # Время жизни access-токена
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),  # Время жизни refresh-токена
     'ROTATE_REFRESH_TOKENS': False,  # Ротация refresh-токенов выключена
     'BLACKLIST_AFTER_ROTATION': True,  # Использование черного списка токенов
     'ALGORITHM': 'HS256',  # Алгоритм подписи

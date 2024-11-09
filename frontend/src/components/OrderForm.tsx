@@ -255,15 +255,17 @@ const OrderForm: React.FC = () => {
                 </Grid>
             </Grid>
 
-            <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                fullWidth
-                sx={{marginTop: 2}}
-            >
-                {renderButtonLabel()}
-            </Button>
+            {(initialStatus === 'new' && !orderId) ? (
+                <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    sx={{ marginTop: 2 }}
+                >
+                    {renderButtonLabel()}
+                </Button>
+            ) : null}
 
             <Button
                 type="button"

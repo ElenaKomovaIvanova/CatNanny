@@ -1,5 +1,6 @@
 import {createSlice, PayloadAction, createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
+import axiosInstance from "./axiosInstance";
 
 
 // Define interfaces for the form fields
@@ -32,7 +33,7 @@ export const createOrder = createAsyncThunk(
     async (requestData: OrderData, {rejectWithValue}) => {
         try {
             const token = localStorage.getItem('access_token');
-            const response = await axios.post('/api/orders/new/', requestData, {
+            const response = await axiosInstance.post('/api/orders/new/', requestData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -49,7 +50,7 @@ export const fetchOrder = createAsyncThunk(
     async (orderId: string, {rejectWithValue}) => {
         try {
             const token = localStorage.getItem('access_token');
-            const response = await axios.get(`/api/orders/${orderId}`, {
+            const response = await axiosInstance.get(`/api/orders/${orderId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -67,7 +68,7 @@ export const updateRequest = createAsyncThunk(
     async ({id, ...requestData}: OrderData & { id: string }, {rejectWithValue}) => {
         try {
             const token = localStorage.getItem('access_token');
-            const response = await axios.put(`/api/orders/${id}/`, requestData, {
+            const response = await axiosInstance.put(`/api/orders/${id}/`, requestData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

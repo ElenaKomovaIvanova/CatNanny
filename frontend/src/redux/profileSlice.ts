@@ -1,5 +1,6 @@
 import {createSlice, PayloadAction, createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
+import axiosInstance from "./axiosInstance";
 
 
 // Profile data interface
@@ -59,7 +60,7 @@ export const updateProfile = createAsyncThunk(
     async (profileData: FormData, {rejectWithValue}) => {
         try {
             const token = localStorage.getItem('access_token');
-            const response = await axios.put('/api/profile/update/', profileData, {
+            const response = await axiosInstance.put('/api/profile/update/', profileData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     Authorization: `Bearer ${token}`
@@ -85,7 +86,7 @@ export const fetchProfile = createAsyncThunk(
                 headers['Authorization'] = `Bearer ${token}`;
             }
 
-            const response = await axios.get(url, { headers });
+            const response = await axiosInstance.get(url, { headers });
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response ? error.response.data : { error: 'Unexpected error occurred.' });
