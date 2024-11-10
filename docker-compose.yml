@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - backend/.env
+    ports:
+      - "8000:8000"
+    networks:
+      - mynetwork
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    networks:
+      - mynetwork
+
+volumes:
+  postgres_data:  # Можете удалить, если больше не нужен
+
+networks:
+  mynetwork:

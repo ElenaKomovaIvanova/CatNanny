@@ -3,7 +3,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
