@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
+const apiUrl = process.env.REACT_APP_API_URL;
 
 interface ErrorPayload {
     error: string;
@@ -57,7 +58,7 @@ export const registerUser = createAsyncThunk<UserDataLogin, UserData, { rejectVa
     'user/register',
     async (userData, { rejectWithValue }) => {
         try {
-            const response = await axios.post('/api/register/', userData);
+            const response = await axios.post(`${apiUrl}/api/register/`, userData);
             const data: UserDataLogin = response.data;
             localStorage.setItem('access_token', data.access);
             localStorage.setItem('refresh_token', data.refresh);
@@ -77,7 +78,8 @@ export const loginUser = createAsyncThunk<UserDataLogin, { username: string; pas
     'user/login',
     async (loginData, { rejectWithValue }) => {
         try {
-            const response = await axios.post('/api/login/', loginData);
+            console.log(apiUrl)
+            const response = await axios.post(`${apiUrl}/api/login/`, loginData);
             const data: UserDataLogin = response.data;
             localStorage.setItem('access_token', data.access);
             localStorage.setItem('refresh_token', data.refresh);
@@ -99,7 +101,7 @@ export const logoutUser = createAsyncThunk<void, void, { rejectValue: ErrorPaylo
     async (_, { rejectWithValue }) => {
         try {
             const refreshToken = localStorage.getItem('refresh_token');
-            await axios.post('/api/logout/', { refresh_token: refreshToken });
+            await axios.post(`${apiUrl}/api/logout/`, { refresh_token: refreshToken });
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
             localStorage.removeItem('profile_id');
@@ -120,7 +122,7 @@ export const refreshToken = createAsyncThunk<string, void, { rejectValue: ErrorP
             const refresh = localStorage.getItem("refresh_token");
             if (!refresh) throw new Error("Refresh token not found");
 
-            const response = await axios.post(`/token/refresh/`, { refresh });
+            const response = await axios.post(`${apiUrl}/token/refresh/`, { refresh });
             const { access } = response.data;
 
             // Сохраняем новый access token

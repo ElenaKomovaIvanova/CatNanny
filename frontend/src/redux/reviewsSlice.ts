@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import axiosInstance from "./axiosInstance";
-
+const apiUrl = process.env.REACT_APP_API_URL;
 
 export interface ReviewData {
     id: number; // ID отзыва
@@ -27,7 +27,7 @@ export const fetchUserReviews = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const token = localStorage.getItem('access_token');
-            const response = await axiosInstance.get('/api/reviews/list/', {
+            const response = await axiosInstance.get(`${apiUrl}/api/reviews/list/`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             return response.data; // Предполагается, что это массив отзывов

@@ -2,6 +2,9 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
+
 // Profile data interface
 interface Nanny {
     id: number;
@@ -42,7 +45,7 @@ export const fetchNannies = createAsyncThunk(
     ) => {
         try {
             const token = localStorage.getItem('access_token');
-            const response = await axiosInstance.get('/api/nannies/', {
+            const response = await axiosInstance.get(`${apiUrl}/api/nannies/`, {
                 params: { start_date: startDate, end_date: endDate, limit: 10, offset },
                 headers: { Authorization: `Bearer ${token}` },
             });

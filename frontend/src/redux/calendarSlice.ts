@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import axiosInstance from "./axiosInstance";
-
+const apiUrl = process.env.REACT_APP_API_URL;
 // Типы для данных недоступного периода
 export interface UnavailablePeriodData {
     start_date: string;
@@ -14,7 +14,7 @@ export const fetchUnavailablePeriods = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const token = localStorage.getItem('access_token');
-            const response = await axiosInstance.get('/api/calendarAvailable/unavailable_periods/list', {
+            const response = await axiosInstance.get(`${apiUrl}/api/calendarAvailable/unavailable_periods/list`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             return response.data;
@@ -30,7 +30,7 @@ export const saveUnavailablePeriod = createAsyncThunk(
     async (periodData: UnavailablePeriodData, { rejectWithValue }) => {
         try {
             const token = localStorage.getItem('access_token');
-            const response = await axiosInstance.post('/api/calendarAvailable/unavailable_periods/', periodData, {
+            const response = await axiosInstance.post(`${apiUrl}/api/calendarAvailable/unavailable_periods/`, periodData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             return response.data;
