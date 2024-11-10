@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import logger from "redux-logger";
 import axiosInstance from "./axiosInstance";
-
+const apiUrl = process.env.REACT_APP_API_URL;
 // Type for visit data
 export interface VisitData {
     id?: number;
@@ -24,7 +24,7 @@ export const fetchVisits = createAsyncThunk(
     async (orderId: number, { rejectWithValue }) => {
         try {
             const token = localStorage.getItem('access_token');
-            const response = await axiosInstance.get('/api/visits/', {
+            const response = await axiosInstance.get(`${apiUrl}/api/visits/`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params: { order: orderId },
             });
@@ -43,7 +43,7 @@ export const createVisit = createAsyncThunk(
     async (visitData: VisitData, { rejectWithValue }) => {
         try {
             const token = localStorage.getItem('access_token');
-            const response = await axios.post('/api/visits/', visitData, {
+            const response = await axios.post(`${apiUrl}/api/visits/`, visitData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             return response.data;

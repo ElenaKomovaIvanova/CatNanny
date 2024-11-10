@@ -1,3 +1,5 @@
+import os
+
 import environ
 from pathlib import Path
 
@@ -11,6 +13,7 @@ NAME = env('NAME')
 USER = env('USER')
 PASSWORD = env('PASSWORD')
 HOST = env('HOST')
+DATABASE_URL=env('DATABASE_URL')
 
 STORAGES = {
     "default": {
@@ -40,9 +43,6 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -68,6 +68,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -78,16 +79,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'backend.urls'
 
-CORS_ORIGIN_WHITELIST = [
-    'http://localhost:3000',
-]
-
 CORS_ORIGIN_ALLOW_ALL = True
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'backend', 'templates')],  # Путь к папке с шаблонами
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -154,12 +151,26 @@ USE_I18N = True
 
 USE_TZ = True
 
+ALLOWED_HOSTS = ['backend', 'localhost', '127.0.0.1', '172.18.0.1']
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://backend:8000",
+    "http://frontend:3000",
+    "http://172.19.0.1:3000",
+    "http://172.19.0.2:3000"
+]
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',  # Обновленный путь к папке static
+]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

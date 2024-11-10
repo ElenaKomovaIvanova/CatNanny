@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-
+const apiUrl = process.env.REACT_APP_API_URL;
 export interface ChatMessage {
     id: number;               // Уникальный идентификатор сообщения
     order: number;            // Идентификатор заказа, к которому относится сообщение
@@ -21,7 +21,7 @@ const initialState: ChatState = {
 export const fetchMessages = createAsyncThunk<ChatMessage[], number>(
     'chat/fetchMessages',
     async (orderId) => {
-        const response = await fetch(`/api/chat/messages/${orderId}/`);  // Убедитесь, что путь совпадает
+        const response = await fetch(`${apiUrl}/api/chat/messages/${orderId}/`);  // Убедитесь, что путь совпадает
         if (!response.ok) {
             throw new Error("Failed to fetch messages");
         }

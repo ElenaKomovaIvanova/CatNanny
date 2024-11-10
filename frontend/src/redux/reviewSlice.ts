@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-
+const apiUrl = process.env.REACT_APP_API_URL;
 // Тип для данных ревью
 export interface ReviewData {
     id?: number; // ID отзыва (может отсутствовать при создании)
@@ -31,7 +31,7 @@ export const saveReview = createAsyncThunk(
             const token = localStorage.getItem('access_token');
             // Определяем метод и URL в зависимости от наличия ID
             const response = reviewData.id
-                ? await axios.put(`/api/reviews/${reviewData.id}/`, reviewData, {
+                ? await axios.put(`${apiUrl}/api/reviews/${reviewData.id}/`, reviewData, {
                     headers: { Authorization: `Bearer ${token}` },
                 }) // Обновление существующего отзыва
                 : await axios.post('/api/reviews/new/', reviewData, {
@@ -50,7 +50,7 @@ export const fetchReviewById = createAsyncThunk(
     async (id: number, { rejectWithValue }) => {
         try {
             const token = localStorage.getItem('access_token');
-            const response = await axios.get(`/api/reviews/${id}/`, {
+            const response = await axios.get(`${apiUrl}/api/reviews/${id}/`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             return response.data; // Предполагается, что это отзыв

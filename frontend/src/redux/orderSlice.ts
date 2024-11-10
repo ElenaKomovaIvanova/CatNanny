@@ -2,7 +2,7 @@ import {createSlice, PayloadAction, createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
 import axiosInstance from "./axiosInstance";
 
-
+const apiUrl = process.env.REACT_APP_API_URL;
 // Define interfaces for the form fields
 export interface OrderData {
     catnanny_first_name: string;
@@ -33,7 +33,7 @@ export const createOrder = createAsyncThunk(
     async (requestData: OrderData, {rejectWithValue}) => {
         try {
             const token = localStorage.getItem('access_token');
-            const response = await axiosInstance.post('/api/orders/new/', requestData, {
+            const response = await axiosInstance.post(`${apiUrl}/api/orders/new/`, requestData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -50,7 +50,7 @@ export const fetchOrder = createAsyncThunk(
     async (orderId: string, {rejectWithValue}) => {
         try {
             const token = localStorage.getItem('access_token');
-            const response = await axiosInstance.get(`/api/orders/${orderId}`, {
+            const response = await axiosInstance.get(`${apiUrl}/api/orders/${orderId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -68,7 +68,7 @@ export const updateRequest = createAsyncThunk(
     async ({id, ...requestData}: OrderData & { id: string }, {rejectWithValue}) => {
         try {
             const token = localStorage.getItem('access_token');
-            const response = await axiosInstance.put(`/api/orders/${id}/`, requestData, {
+            const response = await axiosInstance.put(`${apiUrl}/api/orders/${id}/`, requestData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

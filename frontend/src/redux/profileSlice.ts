@@ -1,7 +1,7 @@
 import {createSlice, PayloadAction, createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
 import axiosInstance from "./axiosInstance";
-
+const apiUrl = process.env.REACT_APP_API_URL;
 
 // Profile data interface
 interface ProfileData {
@@ -60,7 +60,7 @@ export const updateProfile = createAsyncThunk(
     async (profileData: FormData, {rejectWithValue}) => {
         try {
             const token = localStorage.getItem('access_token');
-            const response = await axiosInstance.put('/api/profile/update/', profileData, {
+            const response = await axiosInstance.put(`${apiUrl}/api/profile/update/`, profileData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     Authorization: `Bearer ${token}`
@@ -78,7 +78,7 @@ export const fetchProfile = createAsyncThunk(
     'profile/fetchProfile',
     async ({ id }: { id?: string }, { rejectWithValue }) => {
         const token = localStorage.getItem('access_token');
-        const url = id ? `/api/profile/${id}/` : '/api/profile/';
+        const url = id ? `${apiUrl}/api/profile/${id}/` : '/api/profile/';
 
         try {
             const headers: any = {};

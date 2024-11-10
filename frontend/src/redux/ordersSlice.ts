@@ -3,7 +3,7 @@ import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
 import axiosInstance from "./axiosInstance";
 
-
+const apiUrl = process.env.REACT_APP_API_URL;
 interface Order {
     id: number;
     start_date: string;
@@ -28,7 +28,7 @@ export const fetchOrders = createAsyncThunk(
     async (_, { rejectWithValue }) => {  // исправляем синтаксис
         try {
             const token = localStorage.getItem('access_token');
-            const response = await axiosInstance.get('/api/orders/', {
+            const response = await axiosInstance.get(`${apiUrl}/api/orders/`, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Добавляем токен в заголовок
                 },

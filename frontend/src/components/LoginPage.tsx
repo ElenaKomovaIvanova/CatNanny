@@ -6,6 +6,7 @@ import {RootState, AppDispatch} from '../redux/store'; // Import types
 import {TextField, Button, Box, Typography, CircularProgress} from '@mui/material';
 import {useNavigate} from "react-router-dom"; // Import MUI components
 
+const apiUrl = process.env.REACT_APP_API_URL;
 // Interface for form data
 interface LoginData {
     username: string; // Keep username
