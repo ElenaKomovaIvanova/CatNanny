@@ -1,0 +1,6 @@
+setup:
+  docker: true
+
+build:
+  docker:
+    web: Dockerfile
