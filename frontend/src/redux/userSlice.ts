@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-const REACT_APP_API_URL = process.env.REACT_APP_API_URL;
-
+// const REACT_APP_API_URL = process.env.REACT_APP_API_URL;
+const REACT_APP_API_URL = 'https://catnanny.onrender.com'
 
 interface ErrorPayload {
     error: string;
