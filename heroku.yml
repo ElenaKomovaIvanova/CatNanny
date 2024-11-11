@@ -1,6 +1,7 @@
-setup:
-  docker: true
-
 build:
   docker:
-    web: Dockerfile
+    web: ./backend/Dockerfile  # Указание на Dockerfile для бэкенда
+    frontend: ./frontend/Dockerfile  # Указание на Dockerfile для фронтенда
+
+run:
+  web: docker-compose up --build  # Запуск контейнеров с помощью docker-compose
