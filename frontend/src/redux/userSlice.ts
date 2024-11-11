@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 const apiUrl = process.env.REACT_APP_API_URL;
-console.log(process.env.REACT_APP_API_URL)
+
 
 interface ErrorPayload {
     error: string;
@@ -82,7 +82,7 @@ export const loginUser = createAsyncThunk<UserDataLogin, { username: string; pas
     async (loginData, { rejectWithValue }) => {
         try {
             console.log(apiUrl)
-            const response = await axios.post(`https://catnanny.onrender.com/api/login/`, loginData);
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/login/`, loginData);
             const data: UserDataLogin = response.data;
             localStorage.setItem('access_token', data.access);
             localStorage.setItem('refresh_token', data.refresh);
