@@ -151,7 +151,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-ALLOWED_HOSTS = ['backend', 'localhost', '127.0.0.1', '172.18.0.1']
+ALLOWED_HOSTS = ['backend', 'localhost', '127.0.0.1', '172.18.0.1', 'catnanny-1.onrender.com', 'catnanny.onrender.com',]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
@@ -159,7 +159,10 @@ CORS_ALLOWED_ORIGINS = [
     "http://backend:8000",
     "http://frontend:3000",
     "http://172.19.0.1:3000",
-    "http://172.19.0.2:3000"
+    "http://172.19.0.2:3000",
+    "https://catnanny-1.onrender.com",
+    "https://catnanny.onrender.com",
+
 ]
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
