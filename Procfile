@@ -1,1 +1,1 @@
-web: npm run build
+web: docker-compose up backend frontend
