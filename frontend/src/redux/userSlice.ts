@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-const apiUrl = process.env.REACT_APP_API_URL;
+const REACT_APP_API_URL = process.env.REACT_APP_API_URL;
 
 
 interface ErrorPayload {
@@ -59,9 +59,9 @@ export const registerUser = createAsyncThunk<UserDataLogin, UserData, { rejectVa
     'user/register',
     async (userData, { rejectWithValue }) => {
         try {
-            console.log(apiUrl)
+            console.log(REACT_APP_API_URL)
             const response = await axios.post(`https://catnanny.onrender.com/api/register/`, userData);
-            console.log(apiUrl)
+            console.log(REACT_APP_API_URL)
             const data: UserDataLogin = response.data;
             localStorage.setItem('access_token', data.access);
             localStorage.setItem('refresh_token', data.refresh);
@@ -81,8 +81,8 @@ export const loginUser = createAsyncThunk<UserDataLogin, { username: string; pas
     'user/login',
     async (loginData, { rejectWithValue }) => {
         try {
-            console.log(apiUrl)
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/login/`, loginData);
+            console.log(REACT_APP_API_URL)
+            const response = await axios.post(`${REACT_APP_API_URL}/api/login/`, loginData);
             const data: UserDataLogin = response.data;
             localStorage.setItem('access_token', data.access);
             localStorage.setItem('refresh_token', data.refresh);
@@ -104,7 +104,7 @@ export const logoutUser = createAsyncThunk<void, void, { rejectValue: ErrorPaylo
     async (_, { rejectWithValue }) => {
         try {
             const refreshToken = localStorage.getItem('refresh_token');
-            await axios.post(`${apiUrl}/api/logout/`, { refresh_token: refreshToken });
+            await axios.post(`${REACT_APP_API_URL}/api/logout/`, { refresh_token: refreshToken });
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
             localStorage.removeItem('profile_id');
@@ -125,7 +125,7 @@ export const refreshToken = createAsyncThunk<string, void, { rejectValue: ErrorP
             const refresh = localStorage.getItem("refresh_token");
             if (!refresh) throw new Error("Refresh token not found");
 
-            const response = await axios.post(`${apiUrl}/token/refresh/`, { refresh });
+            const response = await axios.post(`${REACT_APP_API_URL}/token/refresh/`, { refresh });
             const { access } = response.data;
 
             // Сохраняем новый access token
