@@ -60,7 +60,7 @@ export const registerUser = createAsyncThunk<UserDataLogin, UserData, { rejectVa
     async (userData, { rejectWithValue }) => {
         try {
             console.log(apiUrl)
-            const response = await axios.post(`${apiUrl}/api/register/`, userData);
+            const response = await axios.post(`https://catnanny.onrender.com/api/register/`, userData);
             console.log(apiUrl)
             const data: UserDataLogin = response.data;
             localStorage.setItem('access_token', data.access);
