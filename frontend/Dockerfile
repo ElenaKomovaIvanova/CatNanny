@@ -1,6 +1,6 @@
 # frontend/Dockerfile
 FROM node:16 as build
-ARG API_URL
+ARG REACT_APP_API_URL
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ COPY . .
 
 # Сборка проекта React
 #RUN npm run build
-RUN REACT_APP_API_URL=${API_URL} \
+RUN REACT_APP_API_URL=${REACT_APP_API_URL} \
   npm run build
 
 
