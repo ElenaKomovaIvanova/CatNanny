@@ -1,11 +1,11 @@
 import { logoutUser, updateAccessToken } from "./userSlice";
 import axios from "axios";
 
-const API_BASE_URL = "http://127.0.0.1:8000/";
-const apiUrl = process.env.REACT_APP_API_URL;
+// const API_BASE_URL = "http://127.0.0.1:8000/";
+const API_URL = process.env.REACT_APP_API_URL;
 
 const axiosInstance = axios.create({
-    baseURL: API_BASE_URL,
+    baseURL: API_URL,
     timeout: 100000,
     headers: {
         "Content-Type": "application/json",
@@ -63,7 +63,7 @@ axiosInstance.interceptors.response.use(
 
             if (refreshToken) {
                 try {
-                    const response = await axios.post(`${API_BASE_URL}api/token/refresh/`, { refresh: refreshToken });
+                    const response = await axios.post(`${API_URL}api/token/refresh/`, { refresh: refreshToken });
                     const { access } = response.data;
 
                     localStorage.setItem("access_token", access);
