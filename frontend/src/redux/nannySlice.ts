@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import axiosInstance from "./axiosInstance";
+// import axiosInstance from "./axiosInstance";
 
-const apiUrl = process.env.REACT_APP_API_URL;
+const REACT_APP_API_URL = process.env.REACT_APP_API_URL;
 
 
 // Profile data interface
@@ -45,7 +45,7 @@ export const fetchNannies = createAsyncThunk(
     ) => {
         try {
             const token = localStorage.getItem('access_token');
-            const response = await axiosInstance.get(`${apiUrl}/api/nannies/`, {
+            const response = await axios.get(`${REACT_APP_API_URL}/api/nannies/`, {
                 params: { start_date: startDate, end_date: endDate, limit: 10, offset },
                 headers: { Authorization: `Bearer ${token}` },
             });
