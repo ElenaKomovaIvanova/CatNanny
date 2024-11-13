@@ -19,6 +19,8 @@ interface ChatProps {
     currentUserProfileId: number;
 }
 
+const REACT_APP_WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
+
 const Chat: React.FC<ChatProps> = ({ orderId, currentUserProfileId }) => {
     const dispatch = useDispatch<AppDispatch>();
     const messages = useSelector((state: RootState) => state.chat.messages);
@@ -31,7 +33,7 @@ const Chat: React.FC<ChatProps> = ({ orderId, currentUserProfileId }) => {
         dispatch(fetchMessages(orderId));
 
         // Создаем WebSocket соединение
-        const newSocket = new WebSocket(`ws://127.0.0.1:8000/ws/order_chat/${orderId}/`);
+        const newSocket = new WebSocket(`${REACT_APP_WEBSOCKET_URL}/ws/order_chat/${orderId}/`);
 
         newSocket.onopen = () => {
             console.log("WebSocket connection opened");
