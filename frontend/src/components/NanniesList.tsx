@@ -36,9 +36,7 @@ const NanniesList: React.FC = () => {
     const [loadingMore, setLoadingMore] = useState(false);
 
     useEffect(() => {
-        console.log(status)
         if (status === 'idle') {
-            console.log('!!!!!!!!!!!')
             dispatch(fetchNannies({ startDate, endDate, offset: 0 }));
         }
     }, [status, dispatch, startDate, endDate]);
